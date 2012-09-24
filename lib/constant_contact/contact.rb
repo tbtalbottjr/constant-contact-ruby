@@ -146,12 +146,23 @@ module ConstantContact
     # Get a summary list all contacts
     def self.all( options={} )
       contacts = []
+      link = '/contacts'
+      if options['next_link']
+        full_link = options.delete('next_link')
+        link += "?#{full_link.split('?').last}"
+      end
 
-      data = ConstantContact.get( '/contacts', options )
+      data = ConstantContact.get( link, options )
       return contacts if ( data.nil? or data.empty? )
 
       data['feed']['entry'].each do |entry|
         contacts << new( entry )
+      end
+
+      if feed_has_next_link?(data['feed'])
+        next_link = find_next_link data['feed']
+        puts next_link
+        contacts += self.all(options.merge!('next_link' => next_link))
       end
 
       contacts

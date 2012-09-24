@@ -22,3 +22,4 @@ pkg
 doc
 .yardoc
 constant-contact-ruby.rb
+.project

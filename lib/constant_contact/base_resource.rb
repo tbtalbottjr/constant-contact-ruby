@@ -19,5 +19,13 @@ module ConstantContact
       BaseResource.underscore( string )
     end
     
+    def self.feed_has_next_link?(feed)
+      !find_next_link(feed).nil?
+    end
+
+    def self.find_next_link(feed)
+      feed['link'].collect { |link| link['href'] if link["rel"] && link["rel"] == 'next' }.compact.first
+    end
+    
   end
 end
