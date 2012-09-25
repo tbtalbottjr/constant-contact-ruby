@@ -41,7 +41,7 @@ module ConstantContact
     # Update a single contact record
     #
     # NOTE: you cannot update a Contact's ContactList subscriptions through
-    # this method.  Use the apropriate ContactList methods instead
+    # this method.  Use the appropriate ContactList methods instead
     #
     def update_attributes!( params={} )
       return false unless full_record? # TODO: raise some kind of specific error here
@@ -207,6 +207,9 @@ module ConstantContact
       # check response.code
       if data.code == 201 # Entity Created
         return new( data['entry'] )
+      elsif data.code == 400 # Invalid entry
+        puts "Message: #{data.body}"
+        return nil
       else
         # data.code == 409 # Conflict ( probably a duplicate )
         puts "HTTP Status Code: #{data.code}, message: #{data.message}"
@@ -236,13 +239,15 @@ module ConstantContact
     #
     def self.search_by_email( email )
       data = ConstantContact.get( '/contacts', :query => { :email => email.downcase } )
-      return [] if ( data.nil? )
+      return false if ( data.nil? )
       
       if data.code == 500
         puts "HTTP Status Code: #{data.code}, message: #{data.message}"
         return false
       else
-        new( data['feed']['entry'] )
+        params = data['feed']['entry']
+        return false if ( params.nil? )
+        new( params )
       end
     end
 
