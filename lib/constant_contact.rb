@@ -10,6 +10,7 @@ require 'constant_contact/activity'
 module ConstantContact
 
     include HTTParty
+    
     format :xml
     headers 'Accept'        => 'application/atom+xml'
     headers 'Content-Type'  => 'application/atom+xml'
@@ -19,6 +20,10 @@ module ConstantContact
       def setup( user, pass, api_key )
         basic_auth "#{api_key}%#{user}", pass
         base_uri "https://api.constantcontact.com/ws/customers/#{user.downcase}"
+      end
+      
+      def debug_on
+        debug_output $stderr        
       end
     end
 
