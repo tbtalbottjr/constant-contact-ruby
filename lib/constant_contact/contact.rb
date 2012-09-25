@@ -5,7 +5,6 @@ module ConstantContact
 
     def initialize( params={}, orig_xml='', from_contact_list=false ) #:nodoc:
       return false if params.empty?
-
       @uid = params['id'].split('/').last
       @original_xml = orig_xml
       @contact_lists = []
@@ -154,14 +153,18 @@ module ConstantContact
 
       data = ConstantContact.get( link, options )
       return contacts if ( data.nil? or data.empty? )
-
-      data['feed']['entry'].each do |entry|
-        contacts << new( entry )
+      entries = data['feed']['entry']
+      return contacts if ( entries.nil? or entries.empty? )
+      if entries.kind_of?(Array)      
+        entries.each do |entry|
+          contacts << new( entry )
+        end
+      else
+        contacts << new( entries )
       end
 
       if feed_has_next_link?(data['feed'])
         next_link = find_next_link data['feed']
-        puts next_link
         contacts += self.all(options.merge!('next_link' => next_link))
       end
 
