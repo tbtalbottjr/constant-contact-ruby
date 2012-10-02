@@ -26,5 +26,8 @@ module ConstantContact
         debug_output $stderr        
       end
     end
+    
+    class ConstantContactError < StandardError  
+    end  
 
 end
