@@ -70,8 +70,9 @@ module ConstantContact
       if data.code == 201
         return new( data['entry'] )
       else
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return nil
+#        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
+#        return nil
+        raise ConstantContactError.new("HTTP Status Code: #{data.code}, message: #{data.message}")
       end
     end
 
