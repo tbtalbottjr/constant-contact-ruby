@@ -27,7 +27,7 @@ module ConstantContact
       end
     end
     
-    class ConstantContactError < StandardError  
+    class Error < StandardError  
     end  
 
 end

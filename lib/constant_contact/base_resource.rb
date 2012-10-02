@@ -27,5 +27,13 @@ module ConstantContact
       feed['link'].collect { |link| link['href'] if link["rel"] && link["rel"] == 'next' }.compact.first
     end
     
+    def self.extract_error_msg(data)
+      begin
+        errmsg = "HTTP Status Code: #{data.code}, message: #{data.message}"
+      rescue
+        errmsg = data.body
+      end
+      errmsg
+    end
   end
 end
