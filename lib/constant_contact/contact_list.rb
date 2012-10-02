@@ -35,7 +35,7 @@ module ConstantContact
       if data.code == 204
         return true
       else
-        return data # probably should raise an error here instead
+        raise Error.new(extract_error_msg(data))
       end
     end
 
@@ -77,7 +77,8 @@ module ConstantContact
     # Delete a contact list
     def self.delete( id, options={} )
       data = ConstantContact.delete( "/lists/#{id.to_s}", options )
-      return ( data.code == 204 ) ? true : false
+      return true if data.code == 204
+      raise Error.new(extract_error_msg(data))
     end
 
     # Get a single contact list
