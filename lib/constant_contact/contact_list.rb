@@ -146,7 +146,7 @@ EOF
 
     # Is this a full record or a summary record?
     def full_record?
-      !self.members.emtpy?
+      !self.members.empty?
     end
 
     # Convert the object into the needed API XML format
