@@ -146,11 +146,15 @@ module ConstantContact
     def self.all( options={} )
       contacts = []
       link = '/contacts'
+      paged = false
       if options['next_link']
         full_link = options.delete('next_link')
         link += "?#{full_link.split('?').last}"
       end
-
+      if options['paged']       
+        paged = options.delete('paged')
+      end
+      
       data = ConstantContact.get( link, options )
       return contacts if ( data.nil? or data.empty? )
       entries = data['feed']['entry']
@@ -165,7 +169,11 @@ module ConstantContact
 
       if feed_has_next_link?(data['feed'])
         next_link = find_next_link data['feed']
-        contacts += self.all(options.merge!('next_link' => next_link))
+        if paged
+          contacts << {'next_link' => next_link}
+        else
+          contacts += self.all(options.merge!('next_link' => next_link))
+        end
       end
 
       contacts
@@ -257,6 +265,18 @@ module ConstantContact
     # Returns the objects API URI
     def self.url_for( id )
       "#{ConstantContact.base_uri}/contacts/#{id}"
+    end
+
+    # convert a full Contact record into a Hash
+    def to_hash
+      return {} unless full_record?
+
+      contact_hash = {}
+      self.instance_variables.each do |ivar|
+        var = ivar.gsub(/@/,'').to_sym
+        contact_hash[var] = self.instance_variable_get(ivar)
+      end
+      contact_hash
     end
 
     private
