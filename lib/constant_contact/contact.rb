@@ -284,7 +284,7 @@ module ConstantContact
     def update_contact_lists( *lists )
       str = %Q(<ContactLists>\n)
       lists.each do |list|
-        str << %Q(        <ContactList id="#{ContactList.url_for( list )}" />\n)
+        str << %Q(        <ContactList id="#{ContactList.url_for( list )}" />\n) unless list.empty?
       end
       str << %Q(      </ContactLists>)
 
