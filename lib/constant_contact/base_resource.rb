@@ -35,5 +35,22 @@ module ConstantContact
       end
       errmsg
     end
+    
+    def self.create_exception(data)
+      begin
+        err = Error.new(data.message, data.code)
+      rescue
+        err = Error.new(data.body, data.code)
+      end
+      err
+    end
+    
+    def compact_simple_node(node)
+      new_node = {}
+      node.each do |k,v|
+        new_node[k] = v['__content__'].strip unless v['__content__'].nil?
+      end
+      return new_node
+    end
   end
 end

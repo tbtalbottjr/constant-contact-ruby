@@ -6,7 +6,7 @@ module ConstantContact
     CLEAR_CONTACTS      = 'CLEAR_CONTACTS_FROM_LISTS'.freeze
     EXPORT_CONTACTS     = 'EXPORT_CONTACTS'.freeze
 
-    attr_reader :uid, :original_xml
+    attr_reader :uid, :original_xml, :errors, :error_count
 
     def initialize( params={}, orig_xml='' ) #:nodoc:
       return false if params.empty?
@@ -16,8 +16,24 @@ module ConstantContact
 
       fields = params['content']['Activity']
       
+      @errors = []
       if errors = fields.delete( 'Errors' )
         # FIXME: handle the <Errors> node properly
+        if errors.kind_of? Hash
+          error_count = errors['__content__'].strip
+          @error_count = error_count.to_i
+          if error_records = errors['Error']
+            if error_records.kind_of? Array
+              error_records.each do |error|
+                @errors << compact_simple_node(error)
+              end
+            else
+              @errors << compact_simple_node(error_records)
+            end
+          end
+        else
+          @error_count = errors.to_i
+        end
       end
           
       fields.each do |k,v|
@@ -69,8 +85,7 @@ module ConstantContact
       if data.code == 201
         new( data['entry'] )
       else
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return false
+        raise create_exception(data)
       end
     end
 
@@ -86,8 +101,7 @@ module ConstantContact
       if data.code == 201
         new( data['entry'] )
       else
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return false
+        raise create_exception(data)
       end
     end
 
@@ -102,8 +116,7 @@ module ConstantContact
       if data.code == 201
         new( data['entry'] )
       else
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return false
+        raise create_exception(data)
       end
     end
 
@@ -131,8 +144,7 @@ module ConstantContact
       if data.code == 201
         new( data['entry'] )
       else
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return false
+        raise create_exception(data)
       end
     end
 

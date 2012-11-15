@@ -28,6 +28,16 @@ module ConstantContact
     end
     
     class Error < StandardError  
-    end  
+      def initialize(message, code)
+        super
+        @sub_message = message
+        @code = code
+      end
+      def message
+        "HTTP Status Code: #{@code}, message: #{super.message}"
+      end
+ 
+      attr_reader :code, :sub_message
+    end
 
 end

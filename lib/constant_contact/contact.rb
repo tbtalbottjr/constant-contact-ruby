@@ -53,7 +53,7 @@ module ConstantContact
       if data.code == 204 # success
         return true
       else
-        return false # probably should raise an error here instead
+        raise create_exception(data)
       end
     end
 
@@ -70,7 +70,7 @@ module ConstantContact
         self.contact_lists << list_id unless self.contact_lists.include?( list_id )
         return true
       else
-        return false # probably should raise an error here instead
+        raise create_exception(data)
       end
     end
 
@@ -87,7 +87,7 @@ module ConstantContact
         self.contact_lists.delete( list_id )
         return true
       else
-        return false # probably should raise an error here instead
+        raise create_exception(data)
       end
     end
 
@@ -103,7 +103,7 @@ module ConstantContact
         @contact_lists = lists.map { |l| l.to_s }
         return true
       else
-        return false # probably should raise an error here instead
+        raise create_exception(data)
       end
     end
 
@@ -118,7 +118,7 @@ module ConstantContact
         @contact_lists = []
         return true
       else
-        return false
+        raise create_exception(data)
       end
     end
 
@@ -223,8 +223,7 @@ module ConstantContact
         return nil
       else
         # data.code == 409 # Conflict ( probably a duplicate )
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return nil
+        raise create_exception(data)  
       end
     end
     
@@ -253,8 +252,7 @@ module ConstantContact
       return false if ( data.nil? )
       
       if data.code == 500
-        puts "HTTP Status Code: #{data.code}, message: #{data.message}"
-        return false
+        raise Error.new(extract_error_msg(data))
       else
         params = data['feed']['entry']
         return false if ( params.nil? )
