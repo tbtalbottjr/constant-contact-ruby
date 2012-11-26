@@ -126,6 +126,9 @@ EOF
         full_link = options.delete('next_link')
         link += "?#{full_link.split('?').last}"
       end
+      if options['paged']       
+        paged = options.delete('paged')
+      end
       
       members = ConstantContact.get( link, options )
       return nil if ( members.nil? or members.empty? )
@@ -138,7 +141,11 @@ EOF
       
       if feed_has_next_link?(members['feed'])
         next_link = find_next_link members['feed']
-        contacts += fetch_members(id, options.merge!('next_link' => next_link))
+        if paged
+          contacts << {'next_link' => next_link}
+        else
+          contacts += fetch_members(id, options.merge!('next_link' => next_link))
+        end
       end
       
       contacts
