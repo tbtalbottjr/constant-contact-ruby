@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'httparty'
+MultiXml.parser = :rexml
 
 require 'constant_contact'
 require 'constant_contact/base_resource'
@@ -10,11 +11,11 @@ require 'constant_contact/activity'
 module ConstantContact
 
     include HTTParty
-    
+
     format :xml
     headers 'Accept'        => 'application/atom+xml'
     headers 'Content-Type'  => 'application/atom+xml'
-    
+
     class << self
       # Create a connection to the Constant Contact API using your login credentials
       def setup( user, pass, api_key )
@@ -57,7 +58,7 @@ module ConstantContact
 
     class Error < StandardError  
       def initialize(message, code)
-        super
+        super(message)
         @sub_message = message
         @code = code
       end

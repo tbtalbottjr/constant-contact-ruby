@@ -11,6 +11,10 @@ module ConstantContact
       BaseResource.camelize( string )
     end
 
+    def create_exception(data)
+      self.class.create_exception(data)
+    end
+
     def self.underscore( string )
       string.to_s.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').tr("-", "_").downcase
     end

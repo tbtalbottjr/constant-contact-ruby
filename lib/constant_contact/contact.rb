@@ -5,7 +5,11 @@ module ConstantContact
 
     def initialize( params={}, orig_xml='', from_contact_list=false ) #:nodoc:
       return false if params.empty?
-      @uid = params['id'].split('/').last
+      begin
+        @uid = params['id'].split('/').last
+      rescue
+        return false
+      end
       @original_xml = orig_xml
       @contact_lists = []
 
@@ -27,7 +31,7 @@ module ConstantContact
         underscore_key = underscore( k )
         
         instance_eval %{
-          @#{underscore_key} = "#{v}"
+          @#{underscore_key} = %|#{v.to_s.gsub('|','\|')}|
 
           def #{underscore_key}
             @#{underscore_key}
@@ -255,8 +259,27 @@ module ConstantContact
         raise Error.new(extract_error_msg(data))
       else
         params = data['feed']['entry']
+        if params.kind_of?(Array)
+          params = params.first
+        end
         return false if ( params.nil? )
         new( params )
+      end
+    end
+
+    def self.get_by_email(email)
+      rec = search_by_email(email)
+      return nil if rec.blank?
+      contact = self.get(rec.uid)
+      return contact
+    end
+
+    def self.update_by_email(old_email,args)
+      if co = get_by_email(old_email)
+        co.update_attributes!(args)
+        return co
+      else
+        return false
       end
     end
 
